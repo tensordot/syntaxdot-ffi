@@ -39,6 +39,7 @@ pub unsafe extern "C" fn syntaxdot_annotator_annotate(
     handle: u64,
     sentences_data: *const u8,
     sentences_data_len: i32,
+    batch_size: usize,
     err: &mut ExternError,
 ) -> ByteBuffer {
     ANNOTATORS.call_with_result(err, handle, |annotator| -> Result<_, ExternError> {
@@ -47,7 +48,7 @@ pub unsafe extern "C" fn syntaxdot_annotator_annotate(
             prost::Message::decode(buffer).map_err(AnnotatorError::ProtobufDecodeError)?;
         let sentences: sentences::Sentences = sentences.into();
         let annotated_sentences = annotator
-            .annotate_sentences(sentences.0, 32)?
+            .annotate_sentences(sentences.0, batch_size)?
             .into_iter()
             .map(|s| s.sentence)
             .collect::<Vec<_>>();
