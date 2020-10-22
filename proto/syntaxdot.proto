@@ -9,13 +9,6 @@ message Sentences {
 // An annotated sentence.
 message Sentence {
   repeated Token tokens = 1;
-  repeated DependencyEdge edges = 2;
-}
-
-// A dependency edge.
-message DependencyEdge {
-  int32 head = 1;
-  string relation = 2;
 }
 
 // Stick as closely to the CoNLL-U fields as possible.
@@ -27,6 +20,8 @@ message Token {
   string lemma = 3;
   string upos = 4;
   string xpos = 5;
-  map<string, string> features = 7;
-  map<string, string> misc = 8;
+  map<string, string> features = 6;
+  int32 head = 7;
+  string relation = 8;
+  map<string, string> misc = 10;
 }
