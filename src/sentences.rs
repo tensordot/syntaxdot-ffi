@@ -39,6 +39,8 @@ impl From<&Token> for proto::Token {
                 .iter()
                 .map(|(attr, val)| (attr.clone(), val.clone()))
                 .collect(),
+            head: Default::default(),
+            relation: Default::default(),
             misc: token
                 .misc()
                 .iter()
@@ -63,10 +65,24 @@ impl From<proto::Sentence> for Sentence {
 
 impl From<Sentence> for proto::Sentence {
     fn from(sentence: Sentence) -> Self {
-        proto::Sentence {
-            tokens: sentence.tokens().map(Into::into).collect(),
-            edges: vec![],
+        let mut tokens = sentence
+            .tokens()
+            .map(proto::Token::from)
+            .collect::<Vec<_>>();
+
+        // Add dependency edges to the tokens.
+        let dep_graph = sentence.dep_graph();
+        for dependent in 1..sentence.len() {
+            if let Some(dep_triple) = dep_graph.head(dependent) {
+                tokens[dependent - 1].head = dep_triple.head() as i32;
+                tokens[dependent - 1].relation = dep_triple
+                    .relation()
+                    .map(ToOwned::to_owned)
+                    .unwrap_or_else(String::new);
+            }
         }
+
+        proto::Sentence { tokens }
     }
 }
 
