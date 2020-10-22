@@ -8,7 +8,7 @@ pub mod proto {
     include!(concat!(env!("OUT_DIR"), "/syntaxdot.sentence.rs"));
 }
 
-pub struct Sentences(Vec<Sentence>);
+pub struct Sentences(pub Vec<Sentence>);
 
 impl Deref for Sentences {
     type Target = [Sentence];
