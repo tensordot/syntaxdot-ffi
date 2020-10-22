@@ -46,8 +46,12 @@ pub unsafe extern "C" fn syntaxdot_annotator_annotate(
         let sentences: sentences::proto::Sentences =
             prost::Message::decode(buffer).map_err(AnnotatorError::ProtobufDecodeError)?;
         let sentences: sentences::Sentences = sentences.into();
-        annotator.annotate_sentences(&sentences, 32)?;
-        Ok(sentences)
+        let annotated_sentences = annotator
+            .annotate_sentences(sentences.0, 32)?
+            .into_iter()
+            .map(|s| s.sentence)
+            .collect::<Vec<_>>();
+        Ok(sentences::Sentences(annotated_sentences))
     })
 }
 

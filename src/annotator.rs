@@ -85,12 +85,12 @@ impl Annotator {
 
     pub fn annotate_sentences(
         &self,
-        sentences: &[Sentence],
+        sentences: impl IntoIterator<Item = Sentence>,
         batch_size: usize,
     ) -> Result<Vec<SentenceWithPieces>, AnnotatorError> where {
         let mut sentences_with_pieces = sentences
-            .iter()
-            .map(|s| self.tokenizer.tokenize(s.clone()))
+            .into_iter()
+            .map(|s| self.tokenizer.tokenize(s))
             .collect::<Vec<_>>();
 
         // Sort sentences by length.
