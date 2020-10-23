@@ -5,7 +5,7 @@ authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
 
 [lib]
-crate-type = ["lib", "staticlib", "cdylib"]
+crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 conllu = "0.5"
