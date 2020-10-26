@@ -1,5 +1,6 @@
 use ffi_support::{
-    define_handle_map_deleter, ByteBuffer, ConcurrentHandleMap, ExternError, FfiStr,
+    define_bytebuffer_destructor, define_handle_map_deleter, define_string_destructor, ByteBuffer,
+    ConcurrentHandleMap, ExternError, FfiStr,
 };
 use lazy_static::lazy_static;
 use tch::Device;
@@ -16,7 +17,9 @@ lazy_static! {
     static ref ANNOTATORS: ConcurrentHandleMap<Annotator> = ConcurrentHandleMap::new();
 }
 
+define_bytebuffer_destructor!(syntaxdot_free_bytebuffer);
 define_handle_map_deleter!(ANNOTATORS, syntaxdot_annotator_free);
+define_string_destructor!(syntaxdot_free_string);
 
 unsafe fn get_buffer<'a>(data: *const u8, len: i32) -> &'a [u8] {
     assert!(len >= 0, "Bad buffer len: {}", len);
