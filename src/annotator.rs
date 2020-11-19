@@ -47,7 +47,7 @@ impl Annotator {
         P: AsRef<Path>,
     {
         let r = BufReader::new(File::open(&config_path).map_err(|err| {
-            AnnotatorError::IOError(
+            AnnotatorError::IO(
                 format!(
                     "Cannot open syntaxdot config file `{}`",
                     config_path.as_ref().to_string_lossy()
@@ -113,14 +113,14 @@ pub fn load_pretrain_config(config: &Config) -> Result<PretrainConfig, Annotator
 
 fn load_encoders(config: &Config) -> Result<Encoders, AnnotatorError> {
     let f = File::open(&config.labeler.labels).map_err(|err| {
-        AnnotatorError::IOError(
+        AnnotatorError::IO(
             format!("Cannot open label file: {}", config.labeler.labels),
             err,
         )
     })?;
 
     Ok(serde_yaml::from_reader(&f)
-        .map_err(|err| AnnotatorError::LoadEncodersError(config.labeler.labels.clone(), err))?)
+        .map_err(|err| AnnotatorError::LoadEncoders(config.labeler.labels.clone(), err))?)
 }
 
 pub fn load_tokenizer(config: &Config) -> Result<Box<dyn Tokenize>, AnnotatorError> {

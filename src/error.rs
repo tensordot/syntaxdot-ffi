@@ -20,19 +20,19 @@ pub enum AnnotatorError {
     Transformer(#[from] TransformerError),
 
     #[error("{0}: {1}")]
-    IOError(String, io::Error),
+    IO(String, io::Error),
 
     #[error("Cannot deserialize encoders from `{0}`: {1}")]
-    LoadEncodersError(String, serde_yaml::Error),
+    LoadEncoders(String, serde_yaml::Error),
 
     #[error("Cannot load model parameters: {0}")]
-    LoadParametersError(#[from] tch::TchError),
+    LoadParameters(#[from] tch::TchError),
 
     #[error("Cannot decode protobuf: {0}")]
-    ProtobufDecodeError(#[from] prost::DecodeError),
+    ProtobufDecode(#[from] prost::DecodeError),
 
     #[error(transparent)]
-    SyntaxDotError(#[from] SyntaxDotError),
+    SyntaxDot(#[from] SyntaxDotError),
 }
 
 impl From<&AnnotatorError> for ErrorCode {
@@ -40,11 +40,11 @@ impl From<&AnnotatorError> for ErrorCode {
         use AnnotatorError::*;
         match err {
             Transformer(_) => ErrorCode::new(error_codes::TRANSFORMER_ERROR),
-            IOError(_, _) => ErrorCode::new(error_codes::IO_ERROR),
-            LoadEncodersError(_, _) => ErrorCode::new(error_codes::LOAD_ENCODERS_ERROR),
-            LoadParametersError(_) => ErrorCode::new(error_codes::LOAD_PARAMETERS_ERROR),
-            ProtobufDecodeError(_) => ErrorCode::new(error_codes::DECODE_PROTOBUF_ERROR),
-            SyntaxDotError(_) => ErrorCode::new(error_codes::SYNTAXDOT_ERROR),
+            IO(_, _) => ErrorCode::new(error_codes::IO_ERROR),
+            LoadEncoders(_, _) => ErrorCode::new(error_codes::LOAD_ENCODERS_ERROR),
+            LoadParameters(_) => ErrorCode::new(error_codes::LOAD_PARAMETERS_ERROR),
+            ProtobufDecode(_) => ErrorCode::new(error_codes::DECODE_PROTOBUF_ERROR),
+            SyntaxDot(_) => ErrorCode::new(error_codes::SYNTAXDOT_ERROR),
         }
     }
 }

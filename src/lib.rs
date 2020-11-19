@@ -48,7 +48,7 @@ pub unsafe extern "C" fn syntaxdot_annotator_annotate(
     ANNOTATORS.call_with_result(err, handle, |annotator| -> Result<_, ExternError> {
         let buffer = get_buffer(sentences_data, sentences_data_len);
         let sentences: sentences::proto::Sentences =
-            prost::Message::decode(buffer).map_err(AnnotatorError::ProtobufDecodeError)?;
+            prost::Message::decode(buffer).map_err(AnnotatorError::ProtobufDecode)?;
         let sentences: sentences::Sentences = sentences.into();
         let annotated_sentences = annotator
             .annotate_sentences(sentences.0, batch_size)?
