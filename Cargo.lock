@@ -183,18 +183,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "134951f4028bdadb9b84baf4232681efbf277da25144b9b0ad65df75946c422b"
 
 [[package]]
-name = "edit_tree"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2b55ba8d3091e69abec7aebee0667da7c56910fc60ac9f2ec21d603a2768ce6"
-dependencies = [
- "lazy_static",
- "seqalign",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -840,41 +828,40 @@ dependencies = [
 
 [[package]]
 name = "syntaxdot"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6e1d3733daa530016aae46aab9626009af5aa6a4c14b4efea3b8145df24d500"
+checksum = "3505bcde7418572353cd512fe20d7cd7591ebcf0a3c722dffcdd6fb5884ea592"
 dependencies = [
  "conllu",
- "edit_tree",
  "ndarray",
  "numberer",
  "ordered-float",
  "rand",
  "rand_xorshift",
- "sentencepiece",
  "serde",
  "serde_json",
  "syntaxdot-encoders",
+ "syntaxdot-tch-ext",
+ "syntaxdot-tokenizers",
  "syntaxdot-transformers",
  "tch",
  "thiserror",
  "toml",
- "wordpieces",
 ]
 
 [[package]]
 name = "syntaxdot-encoders"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94cc460ba651a4b7265c45df89fb5224e39edeb1ff78741afe4f6365abb16e74"
+checksum = "6ce374616bf198ae18cb560f16004c9674aaad5c09e9feb4831b507957de04ef"
 dependencies = [
  "conllu",
- "edit_tree",
  "lazy_static",
  "numberer",
  "ohnomore",
  "ordered-float",
  "petgraph",
+ "seqalign",
  "serde",
  "serde_derive",
  "thiserror",
@@ -891,6 +878,8 @@ dependencies = [
  "prost-build",
  "serde_yaml",
  "syntaxdot",
+ "syntaxdot-tch-ext",
+ "syntaxdot-tokenizers",
  "syntaxdot-transformers",
  "tch",
  "thiserror",
@@ -898,21 +887,45 @@ dependencies = [
 ]
 
 [[package]]
-name = "syntaxdot-transformers"
-version = "0.1.0"
+name = "syntaxdot-tch-ext"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd3e5b92061a5b08e18b644c4d3c7f24d5536b62d0287e9d6c5893b98e3616e9"
+checksum = "1a70949fc02ebbc8edb2f8c2cef3d5a114ed9d9013559d823bfa468d650ecf6f"
+dependencies = [
+ "itertools 0.9.0",
+ "tch",
+]
+
+[[package]]
+name = "syntaxdot-tokenizers"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "24e321044ca972b3cce4fd7624727da896c7425ae73acb6071ecd1da3cc965b9"
+dependencies = [
+ "conllu",
+ "ndarray",
+ "sentencepiece",
+ "thiserror",
+ "wordpieces",
+]
+
+[[package]]
+name = "syntaxdot-transformers"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7c882901a13e3c064dc04c23e1868538817caa903b28abe97d954e2cabf3fb67"
 dependencies = [
  "serde",
+ "syntaxdot-tch-ext",
  "tch",
  "thiserror",
 ]
 
 [[package]]
 name = "tch"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57756d8b38ed254fbb9ed7cf47fdd0eb93ffe4d1aa927fd5ffa6b019d0fa4efd"
+checksum = "2b4b011115a312db130e804d41329e4d13a199d3b7ce66cc3971713afb22382a"
 dependencies = [
  "half",
  "lazy_static",
@@ -995,9 +1008,9 @@ dependencies = [
 
 [[package]]
 name = "torch-sys"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69bad0036396fded468d8f6ea3105b99282dbb65d5da498f65c65e0816738417"
+checksum = "bef4f8aea151542d5321ac378fd718a87521adb8bc026eb5b2697106503f362c"
 dependencies = [
  "cc",
  "cmake",
