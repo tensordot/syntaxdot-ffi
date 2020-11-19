@@ -6,9 +6,10 @@ use std::path::Path;
 use conllu::graph::Sentence;
 use syntaxdot::config::{Config, PretrainConfig, TomlRead};
 use syntaxdot::encoders::Encoders;
-use syntaxdot::input::{SentenceWithPieces, Tokenize};
 use syntaxdot::model::bert::BertModel;
 use syntaxdot::tagger::Tagger;
+use syntaxdot_tch_ext::RootExt;
+use syntaxdot_tokenizers::{SentenceWithPieces, Tokenize};
 use tch::nn::VarStore;
 use tch::Device;
 
@@ -64,7 +65,7 @@ impl Annotator {
         let mut vs = VarStore::new(device);
 
         let model = BertModel::new(
-            vs.root(),
+            vs.root_ext(|_| 0),
             &pretrain_config,
             &encoders,
             0.0,

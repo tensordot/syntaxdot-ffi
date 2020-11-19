@@ -2,11 +2,11 @@ use std::io;
 
 use ffi_support::{ErrorCode, ExternError};
 use syntaxdot::error::SyntaxDotError;
-use syntaxdot_transformers::models::bert::BertError;
+use syntaxdot_transformers::error::TransformerError;
 use thiserror::Error;
 
 pub mod error_codes {
-    pub const BERT_ERROR: i32 = 1;
+    pub const TRANSFORMER_ERROR: i32 = 1;
     pub const IO_ERROR: i32 = 2;
     pub const LOAD_ENCODERS_ERROR: i32 = 3;
     pub const LOAD_PARAMETERS_ERROR: i32 = 4;
@@ -17,7 +17,7 @@ pub mod error_codes {
 #[derive(Debug, Error)]
 pub enum AnnotatorError {
     #[error("Cannot construct BERT model: {0}")]
-    BertError(#[from] BertError),
+    Transformer(#[from] TransformerError),
 
     #[error("{0}: {1}")]
     IOError(String, io::Error),
@@ -39,7 +39,7 @@ impl From<&AnnotatorError> for ErrorCode {
     fn from(err: &AnnotatorError) -> Self {
         use AnnotatorError::*;
         match err {
-            BertError(_) => ErrorCode::new(error_codes::BERT_ERROR),
+            Transformer(_) => ErrorCode::new(error_codes::TRANSFORMER_ERROR),
             IOError(_, _) => ErrorCode::new(error_codes::IO_ERROR),
             LoadEncodersError(_, _) => ErrorCode::new(error_codes::LOAD_ENCODERS_ERROR),
             LoadParametersError(_) => ErrorCode::new(error_codes::LOAD_PARAMETERS_ERROR),
