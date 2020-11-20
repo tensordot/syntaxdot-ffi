@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use conllu::graph::Sentence;
+use conllu::graph::{DepTriple, Sentence};
 use conllu::token::{Token, Tokens};
 use ffi_support::{implement_into_ffi_by_delegation, implement_into_ffi_by_protobuf};
 
@@ -51,15 +51,70 @@ impl From<&Token> for proto::Token {
 }
 
 impl From<proto::Token> for Token {
-    fn from(token: proto::Token) -> Self {
-        // Ignore every other layer for now...
-        Token::new(token.form)
+    fn from(proto_token: proto::Token) -> Self {
+        let mut token = Token::new(proto_token.form);
+
+        if !proto_token.lemma.is_empty() {
+            token.set_lemma(Some(proto_token.lemma));
+        }
+
+        if !proto_token.upos.is_empty() {
+            token.set_upos(Some(proto_token.upos));
+        }
+
+        if !proto_token.xpos.is_empty() {
+            token.set_xpos(Some(proto_token.xpos));
+        }
+
+        if !proto_token.features.is_empty() {
+            token.set_features(proto_token.features.into_iter().collect());
+        }
+
+        if !proto_token.misc.is_empty() {
+            token.set_misc(
+                proto_token
+                    .misc
+                    .into_iter()
+                    .map(|(k, v)| {
+                        if v.is_empty() {
+                            (k, None)
+                        } else {
+                            (k, Some(v))
+                        }
+                    })
+                    .collect(),
+            );
+        }
+
+        token
     }
 }
 
 impl From<proto::Sentence> for Sentence {
     fn from(sentence: proto::Sentence) -> Self {
-        sentence.tokens.into_iter().map(Into::into).collect()
+        let dep_rels: Vec<_> = sentence
+            .tokens
+            .iter()
+            .map(|t| (t.head, t.relation.clone()))
+            .collect();
+
+        // Convert tokens.
+        let mut sentence: Sentence = sentence.tokens.into_iter().map(Into::into).collect();
+
+        // Add dependency relations.
+        for (idx, (head, rel)) in dep_rels.into_iter().enumerate() {
+            // CoNLL-U requires HEAD and DEPREL for UD treebanks. So, let's assume
+            // that we only have a dependency relation when DEPREL is present.
+            if !rel.is_empty() {
+                sentence.dep_graph_mut().add_deprel(DepTriple::new(
+                    head as usize,
+                    Some(rel),
+                    idx + 1,
+                ));
+            }
+        }
+
+        sentence
     }
 }
 
