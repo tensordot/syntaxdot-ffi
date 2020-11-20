@@ -67,30 +67,172 @@ pub extern "C" fn syntaxdot_annotator_load(config_path: FfiStr<'_>, err: &mut Ex
     })
 }
 
-#[cfg(feature = "model-tests")]
 #[cfg(test)]
 mod tests {
-    use std::env;
     use std::ffi::CString;
 
     use ffi_support::{ErrorCode, ExternError, FfiStr};
 
-    use crate::{syntaxdot_annotator_free, syntaxdot_annotator_load};
+    use crate::error::error_codes::IO_ERROR;
+    use crate::syntaxdot_annotator_load;
+
+    #[test]
+    fn model_cannot_be_loaded() {
+        let mut err = ExternError::default();
+        let config_path = CString::new("/foo/bar/baz").unwrap();
+        let _handle = syntaxdot_annotator_load(FfiStr::from_cstr(&config_path), &mut err);
+        assert_eq!(err.get_code(), ErrorCode::new(IO_ERROR));
+    }
+}
+
+#[cfg(feature = "model-tests")]
+#[cfg(test)]
+mod model_tests {
+    use std::env;
+    use std::ffi::CString;
+    use std::iter::FromIterator;
+
+    use conllu::graph::{DepTriple, Sentence};
+    use conllu::token::{Features, Token, TokenBuilder};
+    use ffi_support::{ErrorCode, ExternError, FfiStr};
+    use pretty_assertions::assert_eq;
+    use prost::Message;
+
+    use crate::sentences::{proto, Sentences};
+    use crate::{syntaxdot_annotator_annotate, syntaxdot_annotator_free, syntaxdot_annotator_load};
+
+    fn test_sentence_protobuf() -> Vec<u8> {
+        let tokens = vec![
+            Token::new("Dit"),
+            Token::new("is"),
+            Token::new("een"),
+            Token::new("test"),
+            Token::new("."),
+        ];
+        let sentences = Sentences(vec![Sentence::from_iter(tokens.into_iter())]);
+        let sentences = proto::Sentences::from(sentences);
+        let mut sentences_proto = Vec::new();
+        sentences.encode(&mut sentences_proto).unwrap();
+        sentences_proto
+    }
+
+    fn test_sentence_check() -> Sentence {
+        let mut sentence = Sentence::from_iter(vec![
+            TokenBuilder::new("Dit")
+                .lemma("dit")
+                .upos("PRON")
+                .xpos("PRON-aanw")
+                .features(Features::from_iter(vec![
+                    ("Person".to_string(), "3".to_string()),
+                    ("PronType".to_string(), "Dem".to_string()),
+                ]))
+                .into(),
+            TokenBuilder::new("is")
+                .lemma("zijn")
+                .upos("AUX")
+                .xpos("AUX-pv")
+                .features(Features::from_iter(vec![
+                    ("Number".to_string(), "Sing".to_string()),
+                    ("Tense".to_string(), "Pres".to_string()),
+                    ("VerbForm".to_string(), "Fin".to_string()),
+                ]))
+                .into(),
+            TokenBuilder::new("een")
+                .lemma("een")
+                .upos("DET")
+                .xpos("DET-onbep")
+                .features(Features::from_iter(vec![(
+                    "Definite".to_string(),
+                    "Ind".to_string(),
+                )]))
+                .into(),
+            TokenBuilder::new("test")
+                .lemma("test")
+                .upos("NOUN")
+                .xpos("NOUN")
+                .features(Features::from_iter(vec![
+                    ("Gender".to_string(), "Com".to_string()),
+                    ("Number".to_string(), "Sing".to_string()),
+                ]))
+                .into(),
+            TokenBuilder::new(".")
+                .lemma(".")
+                .upos("PUNCT")
+                .xpos("PUNCT")
+                .into(),
+        ]);
+
+        sentence
+            .dep_graph_mut()
+            .add_deprel(DepTriple::new(0, Some("root"), 4));
+        sentence
+            .dep_graph_mut()
+            .add_deprel(DepTriple::new(4, Some("nsubj"), 1));
+        sentence
+            .dep_graph_mut()
+            .add_deprel(DepTriple::new(4, Some("cop"), 2));
+        sentence
+            .dep_graph_mut()
+            .add_deprel(DepTriple::new(4, Some("det"), 3));
+        sentence
+            .dep_graph_mut()
+            .add_deprel(DepTriple::new(4, Some("punct"), 5));
+
+        sentence
+    }
 
     #[test]
     fn model_can_be_loaded() {
-        let model_config_path = env::var("MODEL_CONFIG").unwrap();
+        let model_config_path = format!("{}/sticker.conf", env::var("DUTCH_UD_SMALL").unwrap());
+
         let mut err = ExternError::default();
+
+        // Check that a model can be loaded.
         let config_path = CString::new(model_config_path.as_str()).unwrap();
         let handle = syntaxdot_annotator_load(FfiStr::from_cstr(&config_path), &mut err);
         assert_eq!(err.get_code(), ErrorCode::SUCCESS);
 
+        // Check that a model can be freed.
         let mut err = ExternError::default();
         syntaxdot_annotator_free(handle, &mut err);
         assert_eq!(err.get_code(), ErrorCode::SUCCESS);
 
+        // A double free should result in an invalid handle error.
         let mut err = ExternError::default();
         syntaxdot_annotator_free(handle, &mut err);
         assert_eq!(err.get_code(), ErrorCode::INVALID_HANDLE);
+    }
+
+    #[test]
+    fn model_gives_correct_output() {
+        let model_config_path = format!("{}/sticker.conf", env::var("DUTCH_UD_SMALL").unwrap());
+
+        let mut err = ExternError::default();
+
+        // Check that a model can be loaded.
+        let config_path = CString::new(model_config_path.as_str()).unwrap();
+        let handle = syntaxdot_annotator_load(FfiStr::from_cstr(&config_path), &mut err);
+        assert_eq!(err.get_code(), ErrorCode::SUCCESS);
+
+        let sentences_proto = test_sentence_protobuf();
+
+        let buffer = unsafe {
+            syntaxdot_annotator_annotate(
+                handle,
+                sentences_proto.as_ptr(),
+                sentences_proto.len() as i32,
+                32,
+                &mut err,
+            )
+        };
+        assert_eq!(err.get_code(), ErrorCode::SUCCESS);
+
+        let annotated_sentences: Sentences =
+            proto::Sentences::decode(buffer.as_slice()).unwrap().into();
+        assert_eq!(annotated_sentences.0, vec![test_sentence_check()]);
+
+        let mut err = ExternError::default();
+        syntaxdot_annotator_free(handle, &mut err);
+        assert_eq!(err.get_code(), ErrorCode::SUCCESS);
     }
 }
