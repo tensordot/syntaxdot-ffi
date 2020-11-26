@@ -13,6 +13,8 @@ use error::AnnotatorError;
 
 pub mod sentences;
 
+mod util;
+
 lazy_static! {
     static ref ANNOTATORS: ConcurrentHandleMap<Annotator> = ConcurrentHandleMap::new();
 }
