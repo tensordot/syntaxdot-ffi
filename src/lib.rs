@@ -69,6 +69,18 @@ pub extern "C" fn syntaxdot_annotator_load(config_path: FfiStr<'_>, err: &mut Ex
     })
 }
 
+/// Set the number of inter-op threads.
+#[no_mangle]
+pub extern "C" fn syntaxdot_set_num_interop_threads(n_threads: i32) {
+    tch::set_num_interop_threads(n_threads);
+}
+
+/// Set the number of intra-op threads.
+#[no_mangle]
+pub extern "C" fn syntaxdot_set_num_intraop_threads(n_threads: i32) {
+    tch::set_num_threads(n_threads);
+}
+
 #[cfg(test)]
 mod tests {
     use std::ffi::CString;

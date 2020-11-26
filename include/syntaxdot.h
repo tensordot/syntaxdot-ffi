@@ -81,6 +81,16 @@ ByteBuffer syntaxdot_annotator_annotate(uint64_t handle, uint8_t *sentences_data
                                         ExternError *err);
 
 /**
+ * Set the number of Torch inter-op threads.
+ */
+void syntaxdot_set_num_intraop_threads(n_threads: int32_t);
+
+/**
+ * Set the number of Torch inter-op threads.
+ */
+void syntaxdot_set_num_intraop_threads(n_threads: int32_t);
+
+/**
  * Free a <tt>ByteBuffer</tt>.
  * @param buf The buffer to free.
  */
