@@ -83,12 +83,12 @@ ByteBuffer syntaxdot_annotator_annotate(uint64_t handle, uint8_t *sentences_data
 /**
  * Set the number of Torch inter-op threads.
  */
-void syntaxdot_set_num_intraop_threads(n_threads: int32_t);
+void syntaxdot_set_num_intraop_threads(int32_t n_threads);
 
 /**
  * Set the number of Torch inter-op threads.
  */
-void syntaxdot_set_num_intraop_threads(n_threads: int32_t);
+void syntaxdot_set_num_intraop_threads(int32_t n_threads);
 
 /**
  * Free a <tt>ByteBuffer</tt>.
