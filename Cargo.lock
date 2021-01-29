@@ -875,10 +875,10 @@ dependencies = [
 [[package]]
 name = "syntaxdot"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3505bcde7418572353cd512fe20d7cd7591ebcf0a3c722dffcdd6fb5884ea592"
+source = "git+https://github.com/tensordot/syntaxdot.git?branch=main#6ccbeaa1586a042c680d70f15d6ab415662b57e4"
 dependencies = [
  "conllu",
+ "log",
  "ndarray",
  "numberer",
  "ordered-float",
@@ -898,15 +898,18 @@ dependencies = [
 [[package]]
 name = "syntaxdot-encoders"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ce374616bf198ae18cb560f16004c9674aaad5c09e9feb4831b507957de04ef"
+source = "git+https://github.com/tensordot/syntaxdot.git?branch=main#6ccbeaa1586a042c680d70f15d6ab415662b57e4"
 dependencies = [
  "conllu",
+ "itertools 0.9.0",
  "lazy_static",
+ "ndarray",
  "numberer",
  "ohnomore",
  "ordered-float",
  "petgraph",
+ "rand",
+ "rand_xorshift",
  "seqalign",
  "serde",
  "serde_derive",
@@ -925,6 +928,7 @@ dependencies = [
  "prost-build",
  "serde_yaml",
  "syntaxdot",
+ "syntaxdot-encoders",
  "syntaxdot-tch-ext",
  "syntaxdot-tokenizers",
  "syntaxdot-transformers",
@@ -936,8 +940,7 @@ dependencies = [
 [[package]]
 name = "syntaxdot-tch-ext"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a70949fc02ebbc8edb2f8c2cef3d5a114ed9d9013559d823bfa468d650ecf6f"
+source = "git+https://github.com/tensordot/syntaxdot.git?branch=main#6ccbeaa1586a042c680d70f15d6ab415662b57e4"
 dependencies = [
  "itertools 0.9.0",
  "tch",
@@ -946,8 +949,7 @@ dependencies = [
 [[package]]
 name = "syntaxdot-tokenizers"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24e321044ca972b3cce4fd7624727da896c7425ae73acb6071ecd1da3cc965b9"
+source = "git+https://github.com/tensordot/syntaxdot.git?branch=main#6ccbeaa1586a042c680d70f15d6ab415662b57e4"
 dependencies = [
  "conllu",
  "ndarray",
@@ -959,8 +961,7 @@ dependencies = [
 [[package]]
 name = "syntaxdot-transformers"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c882901a13e3c064dc04c23e1868538817caa903b28abe97d954e2cabf3fb67"
+source = "git+https://github.com/tensordot/syntaxdot.git?branch=main#6ccbeaa1586a042c680d70f15d6ab415662b57e4"
 dependencies = [
  "serde",
  "syntaxdot-tch-ext",

@@ -4,10 +4,11 @@ use std::ops::Deref;
 use std::path::Path;
 
 use conllu::graph::Sentence;
-use syntaxdot::config::{Config, PretrainConfig, TomlRead};
+use syntaxdot::config::{BiaffineParserConfig, Config, PretrainConfig, TomlRead};
 use syntaxdot::encoders::Encoders;
 use syntaxdot::model::bert::BertModel;
 use syntaxdot::tagger::Tagger;
+use syntaxdot_encoders::dependency::ImmutableDependencyEncoder;
 use syntaxdot_tch_ext::RootExt;
 use syntaxdot_tokenizers::{SentenceWithPieces, Tokenize};
 use tch::nn::VarStore;
@@ -58,6 +59,11 @@ impl Annotator {
         let mut config = Config::from_toml_read(r)?;
         config.relativize_paths(config_path)?;
 
+        let biaffine_decoder = config
+            .biaffine
+            .as_ref()
+            .map(|config| load_biaffine_decoder(config))
+            .transpose()?;
         let encoders = load_encoders(&config)?;
         let tokenizer = load_tokenizer(&config)?;
         let pretrain_config = load_pretrain_config(&config)?;
@@ -67,6 +73,11 @@ impl Annotator {
         let model = BertModel::new(
             vs.root_ext(|_| 0),
             &pretrain_config,
+            config.biaffine.as_ref(),
+            biaffine_decoder
+                .as_ref()
+                .map(ImmutableDependencyEncoder::n_relations)
+                .unwrap_or(0),
             &encoders,
             0.0,
             config.model.position_embeddings.clone(),
@@ -76,7 +87,7 @@ impl Annotator {
 
         vs.freeze();
 
-        let tagger = Tagger::new(device, model, encoders);
+        let tagger = Tagger::new(device, model, biaffine_decoder, encoders);
 
         Ok(Annotator {
             tagger: TaggerWrap(tagger),
@@ -109,6 +120,22 @@ impl Annotator {
 
 pub fn load_pretrain_config(config: &Config) -> Result<PretrainConfig, AnnotatorError> {
     Ok(config.model.pretrain_config()?)
+}
+
+fn load_biaffine_decoder(
+    config: &BiaffineParserConfig,
+) -> Result<ImmutableDependencyEncoder, AnnotatorError> {
+    let f = File::open(&config.labels).map_err(|err| {
+        AnnotatorError::IO(
+            format!("Cannot open biaffine label file: {}", config.labels),
+            err,
+        )
+    })?;
+
+    let encoder: ImmutableDependencyEncoder = serde_yaml::from_reader(&f)
+        .map_err(|err| AnnotatorError::LoadEncoders(config.labels.clone(), err))?;
+
+    Ok(encoder)
 }
 
 fn load_encoders(config: &Config) -> Result<Encoders, AnnotatorError> {
