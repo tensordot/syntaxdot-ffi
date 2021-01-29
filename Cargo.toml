@@ -13,10 +13,11 @@ ffi-support = "0.4"
 lazy_static = "1"
 prost = "0.6"
 serde_yaml = "0.8"
-syntaxdot = { version = "0.2", default-features = false }
-syntaxdot-tch-ext = "0.2.0"
-syntaxdot-tokenizers = "0.2.0"
-syntaxdot-transformers = { version = "0.2", default-features = false }
+syntaxdot = { git = "https://github.com/tensordot/syntaxdot.git", branch = "main" }
+syntaxdot-encoders = { git = "https://github.com/tensordot/syntaxdot.git", branch = "main" }
+syntaxdot-tch-ext = { git = "https://github.com/tensordot/syntaxdot.git", branch = "main" }
+syntaxdot-tokenizers = { git = "https://github.com/tensordot/syntaxdot.git", branch = "main" }
+syntaxdot-transformers = { git = "https://github.com/tensordot/syntaxdot.git", branch = "main" }
 tch = "0.3"
 thiserror = "1"
 toml = "0.5"

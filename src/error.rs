@@ -2,7 +2,7 @@ use std::io;
 
 use ffi_support::{ErrorCode, ExternError};
 use syntaxdot::error::SyntaxDotError;
-use syntaxdot_transformers::error::TransformerError;
+use syntaxdot_transformers::TransformerError;
 use thiserror::Error;
 
 pub mod error_codes {
