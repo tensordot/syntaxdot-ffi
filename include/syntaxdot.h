@@ -91,6 +91,13 @@ void syntaxdot_set_num_intraop_threads(int32_t n_threads);
 void syntaxdot_set_num_intraop_threads(int32_t n_threads);
 
 /**
+ * Get the syntaxdot version.
+ *
+ * The returned string must not be deallocated.
+ */
+char const *syntaxdot_version();
+
+/**
  * Free a <tt>ByteBuffer</tt>.
  * @param buf The buffer to free.
  */

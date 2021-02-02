@@ -30,3 +30,6 @@ pretty_assertions = "0.6"
 
 [features]
 model-tests = []
+
+[patch.crates-io]
+tch = { git = "https://github.com/LaurentMazare/tch-rs.git" }

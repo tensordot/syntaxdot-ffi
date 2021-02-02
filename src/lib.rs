@@ -10,6 +10,8 @@ use annotator::Annotator;
 
 mod error;
 use error::AnnotatorError;
+use std::ffi::CString;
+use std::os::raw::c_char;
 
 pub mod sentences;
 
@@ -17,6 +19,7 @@ mod util;
 
 lazy_static! {
     static ref ANNOTATORS: ConcurrentHandleMap<Annotator> = ConcurrentHandleMap::new();
+    static ref SYNTAXDOT_VERSION: CString = CString::new(syntaxdot::VERSION).unwrap();
 }
 
 define_bytebuffer_destructor!(syntaxdot_free_bytebuffer);
@@ -79,6 +82,14 @@ pub extern "C" fn syntaxdot_set_num_interop_threads(n_threads: i32) {
 #[no_mangle]
 pub extern "C" fn syntaxdot_set_num_intraop_threads(n_threads: i32) {
     tch::set_num_threads(n_threads);
+}
+
+/// Get the syntaxdot version.
+///
+/// The returned string must not be deallocated.
+#[no_mangle]
+pub extern "C" fn syntaxdot_version() -> *const c_char {
+    SYNTAXDOT_VERSION.as_ptr()
 }
 
 #[cfg(test)]
