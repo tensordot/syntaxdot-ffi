@@ -1,8 +1,8 @@
 use std::ops::Deref;
 
-use conllu::graph::{DepTriple, Sentence};
-use conllu::token::{Token, Tokens};
 use ffi_support::{implement_into_ffi_by_delegation, implement_into_ffi_by_protobuf};
+use udgraph::graph::{DepTriple, Sentence};
+use udgraph::token::{Token, Tokens};
 
 pub mod proto {
     include!(concat!(env!("OUT_DIR"), "/syntaxdot.sentence.rs"));
