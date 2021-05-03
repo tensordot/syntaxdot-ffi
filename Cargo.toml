@@ -3,6 +3,7 @@ name = "syntaxdot-ffi"
 version = "0.2.0"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
+license = "Apache-2.0 OR MIT"
 
 [lib]
 crate-type = ["staticlib", "cdylib"]
