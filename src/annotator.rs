@@ -3,7 +3,6 @@ use std::io::BufReader;
 use std::ops::Deref;
 use std::path::Path;
 
-use conllu::graph::Sentence;
 use syntaxdot::config::{BiaffineParserConfig, Config, PretrainConfig, TomlRead};
 use syntaxdot::encoders::Encoders;
 use syntaxdot::model::bert::BertModel;
@@ -13,6 +12,7 @@ use syntaxdot_tch_ext::RootExt;
 use syntaxdot_tokenizers::{SentenceWithPieces, Tokenize};
 use tch::nn::VarStore;
 use tch::Device;
+use udgraph::graph::Sentence;
 
 use crate::AnnotatorError;
 
@@ -79,6 +79,7 @@ impl Annotator {
                 .map(ImmutableDependencyEncoder::n_relations)
                 .unwrap_or(0),
             &encoders,
+            config.model.pooler,
             0.0,
             config.model.position_embeddings.clone(),
         )?;
