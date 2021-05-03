@@ -48,7 +48,7 @@ impl Annotator {
         P: AsRef<Path>,
     {
         let r = BufReader::new(File::open(&config_path).map_err(|err| {
-            AnnotatorError::IO(
+            AnnotatorError::Io(
                 format!(
                     "Cannot open syntaxdot config file `{}`",
                     config_path.as_ref().to_string_lossy()
@@ -127,7 +127,7 @@ fn load_biaffine_decoder(
     config: &BiaffineParserConfig,
 ) -> Result<ImmutableDependencyEncoder, AnnotatorError> {
     let f = File::open(&config.labels).map_err(|err| {
-        AnnotatorError::IO(
+        AnnotatorError::Io(
             format!("Cannot open biaffine label file: {}", config.labels),
             err,
         )
@@ -141,14 +141,14 @@ fn load_biaffine_decoder(
 
 fn load_encoders(config: &Config) -> Result<Encoders, AnnotatorError> {
     let f = File::open(&config.labeler.labels).map_err(|err| {
-        AnnotatorError::IO(
+        AnnotatorError::Io(
             format!("Cannot open label file: {}", config.labeler.labels),
             err,
         )
     })?;
 
-    Ok(serde_yaml::from_reader(&f)
-        .map_err(|err| AnnotatorError::LoadEncoders(config.labeler.labels.clone(), err))?)
+    serde_yaml::from_reader(&f)
+        .map_err(|err| AnnotatorError::LoadEncoders(config.labeler.labels.clone(), err))
 }
 
 pub fn load_tokenizer(config: &Config) -> Result<Box<dyn Tokenize>, AnnotatorError> {

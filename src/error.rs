@@ -20,7 +20,7 @@ pub enum AnnotatorError {
     Transformer(#[from] TransformerError),
 
     #[error("{0}: {1}")]
-    IO(String, io::Error),
+    Io(String, io::Error),
 
     #[error("Cannot deserialize encoders from `{0}`: {1}")]
     LoadEncoders(String, serde_yaml::Error),
@@ -40,7 +40,7 @@ impl From<&AnnotatorError> for ErrorCode {
         use AnnotatorError::*;
         match err {
             Transformer(_) => ErrorCode::new(error_codes::TRANSFORMER_ERROR),
-            IO(_, _) => ErrorCode::new(error_codes::IO_ERROR),
+            Io(_, _) => ErrorCode::new(error_codes::IO_ERROR),
             LoadEncoders(_, _) => ErrorCode::new(error_codes::LOAD_ENCODERS_ERROR),
             LoadParameters(_) => ErrorCode::new(error_codes::LOAD_PARAMETERS_ERROR),
             ProtobufDecode(_) => ErrorCode::new(error_codes::DECODE_PROTOBUF_ERROR),
