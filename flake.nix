@@ -33,6 +33,11 @@
         };
 
         PROTOC = "${protobuf}/bin/protoc";
+
+        DUTCH_UD_MEDIUM = fetchTarball {
+          url = "https://s3.tensordot.com/syntaxdot/models/nl-ud-medium-20210312.tar.gz";
+          sha256 = "0fysnjb62l55hi1xsdlgrxdwrg8c0wc6jl0w29y60jmmgfydqwl2";
+        };
       };
 
       defaultPackage = let

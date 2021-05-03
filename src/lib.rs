@@ -117,11 +117,11 @@ mod model_tests {
     use std::ffi::CString;
     use std::iter::FromIterator;
 
-    use conllu::graph::{DepTriple, Sentence};
-    use conllu::token::{Features, Token, TokenBuilder};
     use ffi_support::{ErrorCode, ExternError, FfiStr};
     use pretty_assertions::assert_eq;
     use prost::Message;
+    use udgraph::graph::{DepTriple, Sentence};
+    use udgraph::token::{Features, Token, TokenBuilder};
 
     use crate::sentences::{proto, Sentences};
     use crate::{syntaxdot_annotator_annotate, syntaxdot_annotator_free, syntaxdot_annotator_load};
@@ -208,7 +208,7 @@ mod model_tests {
 
     #[test]
     fn model_can_be_loaded() {
-        let model_config_path = format!("{}/sticker.conf", env::var("DUTCH_UD_SMALL").unwrap());
+        let model_config_path = format!("{}/syntaxdot.conf", env::var("DUTCH_UD_MEDIUM").unwrap());
 
         let mut err = ExternError::default();
 
@@ -230,7 +230,7 @@ mod model_tests {
 
     #[test]
     fn model_gives_correct_output() {
-        let model_config_path = format!("{}/sticker.conf", env::var("DUTCH_UD_SMALL").unwrap());
+        let model_config_path = format!("{}/syntaxdot.conf", env::var("DUTCH_UD_MEDIUM").unwrap());
 
         let mut err = ExternError::default();
 
